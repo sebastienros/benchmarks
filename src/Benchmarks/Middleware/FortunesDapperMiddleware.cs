@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Benchmarks.Configuration;
@@ -29,8 +30,10 @@ namespace Benchmarks.Middleware
         {
             if (httpContext.Request.Path.StartsWithSegments(_path, StringComparison.Ordinal))
             {
-                var db = httpContext.RequestServices.GetService<DapperDb>();
-                var rows = await db.LoadFortunesRows();
+                //var db = httpContext.RequestServices.GetService<DapperDb>();
+                //var rows = await db.LoadFortunesRows();
+
+                var rows = Enumerable.Range(0, 10).Select(x => new Fortune { Id = x, Message = x.ToString() }).ToList();
 
                 await MiddlewareHelpers.RenderFortunesHtml(rows, httpContext, _htmlEncoder);
 
