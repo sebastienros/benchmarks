@@ -97,26 +97,24 @@ namespace Benchmarks.Data
             return results;
         }
 
-        public Task<IEnumerable<Fortune>> LoadFortunesRows()
+        public async Task<IEnumerable<Fortune>> LoadFortunesRows()
         {
             List<Fortune> result;
 
             result = Enumerable.Range(0, 10).Select(x => new Fortune { Id = x, Message = x.ToString() }).ToList();
 
-            return Task.FromResult< IEnumerable<Fortune>>(result);
+            using (var db = _dbProviderFactory.CreateConnection())
+            {
+                db.ConnectionString = _connectionString;
 
-            //using (var db = _dbProviderFactory.CreateConnection())
-            //{
-            //    db.ConnectionString = _connectionString;
+                // Note: don't need to open connection if only doing one thing; let dapper do it
+                result = (await db.QueryAsync<Fortune>("SELECT id, message FROM fortune")).AsList();
+            }
 
-            //    // Note: don't need to open connection if only doing one thing; let dapper do it
-            //    result = (await db.QueryAsync<Fortune>("SELECT id, message FROM fortune")).AsList();
-            //}
+            result.Add(new Fortune { Message = "Additional fortune added at request time." });
+            result.Sort();
 
-            //result.Add(new Fortune { Message = "Additional fortune added at request time." });
-            //result.Sort();
-
-            //return result;
+            return result;
         }
     }
 }

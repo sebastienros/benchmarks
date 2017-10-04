@@ -30,10 +30,8 @@ namespace Benchmarks.Middleware
         {
             if (httpContext.Request.Path.StartsWithSegments(_path, StringComparison.Ordinal))
             {
-                //var db = httpContext.RequestServices.GetService<DapperDb>();
-                //var rows = await db.LoadFortunesRows();
-
-                var rows = Enumerable.Range(0, 10).Select(x => new Fortune { Id = x, Message = x.ToString() }).ToList();
+                var db = httpContext.RequestServices.GetService<DapperDb>();
+                var rows = await db.LoadFortunesRows();
 
                 await MiddlewareHelpers.RenderFortunesHtml(rows, httpContext, _htmlEncoder);
 
