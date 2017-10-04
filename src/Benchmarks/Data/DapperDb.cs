@@ -107,7 +107,7 @@ namespace Benchmarks.Data
                 db.ConnectionString = _connectionString;
 
                 // Note: don't need to open connection if only doing one thing; let dapper do it
-                result = (await db.QueryAsync<Fortune>("SELECT id, message FROM fortune")).AsList();
+                result = (await db.QueryAsync<Fortune>("SELECT * FROM fortune")).AsList();
             }
 
             result.Add(new Fortune { Message = "Additional fortune added at request time." });
