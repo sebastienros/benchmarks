@@ -103,14 +103,17 @@ namespace Benchmarks.Data
 
             using (var db = _dbProviderFactory.CreateConnection())
             {
-                db.ConnectionString = _connectionString;
+                using (var tx = db.BeginTransaction(System.Data.IsolationLevel.ReadUncommitted))
+                {
+                    db.ConnectionString = _connectionString;
 
-                // Note: don't need to open connection if only doing one thing; let dapper do it
-                result = (await db.QueryAsync<Fortune>("SELECT id, message FROM fortune")).AsList();
+                    // Note: don't need to open connection if only doing one thing; let dapper do it
+                    result = (await db.QueryAsync<Fortune>("SELECT id, message FROM fortune", transaction: tx)).AsList();
+                }
             }
 
             result.Add(new Fortune { Message = "Additional fortune added at request time." });
-            // result.Sort();
+            result.Sort();
 
             return result;
         }
