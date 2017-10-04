@@ -25,6 +25,7 @@ namespace Benchmarks.Data
             _random = random;
             _dbProviderFactory = dbProviderFactory;
             _connectionString = appSettings.Value.ConnectionString;
+            _connectionString += $";Connection Pruning Interval=120; Minimum Pool Size= 512";
         }
 
         public async Task<World> LoadSingleQueryRow()
@@ -103,13 +104,10 @@ namespace Benchmarks.Data
 
             using (var db = _dbProviderFactory.CreateConnection())
             {
-                using (var tx = db.BeginTransaction(System.Data.IsolationLevel.ReadUncommitted))
-                {
-                    db.ConnectionString = _connectionString;
+                db.ConnectionString = _connectionString;
 
-                    // Note: don't need to open connection if only doing one thing; let dapper do it
-                    result = (await db.QueryAsync<Fortune>("SELECT id, message FROM fortune", transaction: tx)).AsList();
-                }
+                // Note: don't need to open connection if only doing one thing; let dapper do it
+                result = (await db.QueryAsync<Fortune>("SELECT id, message FROM fortune")).AsList();
             }
 
             result.Add(new Fortune { Message = "Additional fortune added at request time." });
