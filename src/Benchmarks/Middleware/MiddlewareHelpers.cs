@@ -30,7 +30,7 @@ namespace Benchmarks.Middleware
                     : 1;
         }
 
-        public static Task RenderFortunesHtml(IEnumerable<Fortune> model, HttpContext httpContext, HtmlEncoder htmlEncoder)
+        public static async Task RenderFortunesHtml(IEnumerable<Fortune> model, HttpContext httpContext, HtmlEncoder htmlEncoder)
         {
             httpContext.Response.StatusCode = StatusCodes.Status200OK;
             httpContext.Response.ContentType = "text/html; charset=UTF-8";
@@ -48,10 +48,24 @@ namespace Benchmarks.Middleware
 
             //sb.Append("</table></body></html>");
 
-            var response = "Hello World";  // sb.ToString();
+            // var response = sb.ToString();
+
+
+            await httpContext.Response.WriteAsync("<!DOCTYPE html><html><head><title>Fortunes</title></head><body><table><tr><th>id</th><th>message</th></tr>");
+            foreach (var item in model)
+            {
+                await httpContext.Response.WriteAsync("<tr><td>");
+                await httpContext.Response.WriteAsync(item.Id.ToString(CultureInfo.InvariantCulture));
+                await httpContext.Response.WriteAsync("</td><td>");
+                await httpContext.Response.WriteAsync(htmlEncoder.Encode(item.Message));
+                await httpContext.Response.WriteAsync("</td></tr>");
+            }
+
+            await httpContext.Response.WriteAsync("</table></body></html>");
+
             // fortunes includes multibyte characters so response.Length is incorrect
-            httpContext.Response.ContentLength = Encoding.UTF8.GetByteCount(response);
-            return httpContext.Response.WriteAsync(response);
+            // httpContext.Response.ContentLength = Encoding.UTF8.GetByteCount(response);
+            // await httpContext.Response.WriteAsync(response);
         }
     }
 }
