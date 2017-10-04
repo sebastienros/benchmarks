@@ -101,8 +101,6 @@ namespace Benchmarks.Data
         {
             List<Fortune> result;
 
-            result = Enumerable.Range(0, 10).Select(x => new Fortune { Id = x, Message = x.ToString() }).ToList();
-
             using (var db = _dbProviderFactory.CreateConnection())
             {
                 db.ConnectionString = _connectionString;
@@ -112,7 +110,7 @@ namespace Benchmarks.Data
             }
 
             result.Add(new Fortune { Message = "Additional fortune added at request time." });
-            result.Sort();
+            // result.Sort();
 
             return result;
         }
