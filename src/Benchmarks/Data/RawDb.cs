@@ -143,7 +143,7 @@ namespace Benchmarks.Data
             return results;
         }
 
-        public async Task<IEnumerable<Fortune>> LoadFortunesRows()
+        public async Task<IList<Fortune>> LoadFortunesRows()
         {
             var result = new List<Fortune>();
 

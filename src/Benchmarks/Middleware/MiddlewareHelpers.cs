@@ -30,15 +30,16 @@ namespace Benchmarks.Middleware
                     : 1;
         }
 
-        public static Task RenderFortunesHtml(IEnumerable<Fortune> model, HttpContext httpContext, HtmlEncoder htmlEncoder)
+        public static Task RenderFortunesHtml(IList<Fortune> model, HttpContext httpContext, HtmlEncoder htmlEncoder)
         {
             httpContext.Response.StatusCode = StatusCodes.Status200OK;
             httpContext.Response.ContentType = "text/html; charset=UTF-8";
 
             var sb = new StringBuilder();
             sb.Append("<!DOCTYPE html><html><head><title>Fortunes</title></head><body><table><tr><th>id</th><th>message</th></tr>");
-            foreach (var item in model)
+            for (var i = 0; i < model.Count; i++)
             {
+                var item = model[i];
                 sb.Append("<tr><td>");
                 sb.Append(item.Id.ToString(CultureInfo.InvariantCulture));
                 sb.Append("</td><td>");
