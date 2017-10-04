@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Dynamic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Benchmarks.Configuration;
@@ -96,22 +97,26 @@ namespace Benchmarks.Data
             return results;
         }
 
-        public async Task<IEnumerable<Fortune>> LoadFortunesRows()
+        public Task<IEnumerable<Fortune>> LoadFortunesRows()
         {
             List<Fortune> result;
 
-            using (var db = _dbProviderFactory.CreateConnection())
-            {
-                db.ConnectionString = _connectionString;
+            result = Enumerable.Range(0, 10).Select(x => new Fortune { Id = x, Message = x.ToString() }).ToList();
 
-                // Note: don't need to open connection if only doing one thing; let dapper do it
-                result = (await db.QueryAsync<Fortune>("SELECT id, message FROM fortune")).AsList();
-            }
+            return Task.FromResult< IEnumerable<Fortune>>(result);
 
-            result.Add(new Fortune { Message = "Additional fortune added at request time." });
-            result.Sort();
+            //using (var db = _dbProviderFactory.CreateConnection())
+            //{
+            //    db.ConnectionString = _connectionString;
 
-            return result;
+            //    // Note: don't need to open connection if only doing one thing; let dapper do it
+            //    result = (await db.QueryAsync<Fortune>("SELECT id, message FROM fortune")).AsList();
+            //}
+
+            //result.Add(new Fortune { Message = "Additional fortune added at request time." });
+            //result.Sort();
+
+            //return result;
         }
     }
 }
