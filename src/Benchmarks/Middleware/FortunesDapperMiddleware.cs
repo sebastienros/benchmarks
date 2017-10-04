@@ -34,6 +34,8 @@ namespace Benchmarks.Middleware
 
                 await MiddlewareHelpers.RenderFortunesHtml(rows, httpContext, _htmlEncoder);
 
+                await Task.Delay(1000);
+
                 return;
             }
 
